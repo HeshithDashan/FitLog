@@ -16,11 +16,10 @@ public class DBConnection {
     static {
         try {
             Properties prop = new Properties();
-            
-            InputStream input = DBConnection.class.getResourceAsStream("config.properties");
+            InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("config.properties");
             
             if(input == null){
-                System.out.println("FATAL ERROR: Cannot find config.properties in the same package as DBConnection!");
+                System.out.println("FATAL ERROR: Cannot find config.properties in the default package!");
             } else {
                  prop.load(input);
                  URL = prop.getProperty("db.url");
