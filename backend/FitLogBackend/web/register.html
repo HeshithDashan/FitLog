@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register User</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Register New User</h1>
+    <form action="http://localhost:8080/FitLogBackend/register" method="post">
+        <label for="firstName">First Name:</label><br>
+        <input type="text" id="firstName" name="firstName" value="Test"><br><br>
+        
+        <label for="lastName">Last Name:</label><br>
+        <input type="text" id="lastName" name="lastName" value="User"><br><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" value="test@example.com"><br><br>
+        
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" value="password123"><br><br>
+        
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
