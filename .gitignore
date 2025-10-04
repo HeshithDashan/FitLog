@@ -2,3 +2,5 @@
 /backend/FitLogBE/nbproject/private/
 # Database configuration file
 /backend/FitLogBackend/src/config.properties
+/backend/FitLogBackend/build/
+/backend/FitLogBackend/dist/
