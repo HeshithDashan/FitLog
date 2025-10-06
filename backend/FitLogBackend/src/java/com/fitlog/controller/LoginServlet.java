@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession; // <-- මෙන්න මේ පේළිය තමයි ඔයාට miss වෙලා තියෙන්නේ
+import javax.servlet.http.HttpSession; 
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {

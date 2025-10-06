@@ -1,7 +1,7 @@
 package com.fitlog.controller;
 
 import com.fitlog.dao.WorkoutDAO;
-import com.fitlog.model.User; // <-- User class එක import කරගන්නවා
+import com.fitlog.model.User;
 import com.fitlog.model.Workout;
 import java.io.IOException;
 import java.sql.Date;
@@ -12,7 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession; // <-- HttpSession එක import කරගන්නවා
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/workouts")
 public class WorkoutServlet extends HttpServlet {
@@ -28,20 +28,18 @@ public class WorkoutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // --- මෙන්න අලුත් කොටස: Session එක check කිරීම ---
-        HttpSession session = request.getSession(false); // Existing session එකක් තියෙනවද බලනවා, අලුතින් හදන්නෙ නෑ.
+        
+        HttpSession session = request.getSession(false);
 
-        // Session එකක් නැත්නම් හෝ user කෙනෙක් login වෙලා නැත්නම්, error එකක් යවනවා
+       
         if (session == null || session.getAttribute("loggedInUser") == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Status 401 Unauthorized
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Authentication Error: You must be logged in to add a workout.");
-            return; // Method එක මෙතනින්ම නවත්වනවා
+            return;
         }
 
-        // Session එකෙන් loggedInUser object එක ලබාගැනීම
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-        int userId = loggedInUser.getId(); // Hardcode කරපු '1' වෙනුවට ඇත්ත User ID එක ගන්නවා
-        // --- අලුත් කොටස අවසානයි ---
+        int userId = loggedInUser.getId();
         
         String workoutType = request.getParameter("workoutType");
         String durationStr = request.getParameter("durationMinutes");
@@ -57,7 +55,7 @@ public class WorkoutServlet extends HttpServlet {
             Date logDate = new Date(utilDate.getTime());
 
             Workout newWorkout = new Workout();
-            newWorkout.setUserId(userId); // මෙතනට එන්නේ දැන් session එකෙන් ගත්ත ID එක
+            newWorkout.setUserId(userId);
             newWorkout.setWorkoutType(workoutType);
             newWorkout.setDurationMinutes(durationMinutes);
             newWorkout.setCaloriesBurned(caloriesBurned);
