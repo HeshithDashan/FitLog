@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession; // <-- මෙන්න මේ පේළිය තමයි ඔයාට miss වෙලා තියෙන්නේ
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -23,21 +24,21 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
         try {
-
             User user = userDAO.loginUser(email, password);
 
-
             if (user != null) {
+                HttpSession session = request.getSession();
+                session.setAttribute("loggedInUser", user);
+                session.setMaxInactiveInterval(60 * 60);
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write("Login Successful! Welcome " + user.getFirstName());
+                
             } else {
-
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Invalid email or password. Please try again.");
             }
