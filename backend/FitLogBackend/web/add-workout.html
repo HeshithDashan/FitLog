@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add Workout - FitLog</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: #f0f2f5;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px 0;
+            }
+            .form-container {
+                background-color: #ffffff;
+                padding: 40px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 500px;
+            }
+            .form-container h1 {
+                text-align: center;
+                margin-bottom: 24px;
+                color: #1c1e21;
+            }
+            .input-group {
+                margin-bottom: 20px;
+            }
+            .input-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: #606770;
+            }
+            .input-group input, .input-group select {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #dddfe2;
+                border-radius: 6px;
+                font-size: 16px;
+                font-family: 'Poppins', sans-serif;
+            }
+            .input-group input:focus, .input-group select:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+            .submit-btn {
+                width: 100%;
+                padding: 12px;
+                background-color: #007bff;
+                border: none;
+                border-radius: 6px;
+                color: #ffffff;
+                font-size: 18px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            .submit-btn:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="form-container">
+            <h1>Log Your Workout</h1>
+
+            <form action="http://localhost:8080/FitLogBackend/workouts" method="post">
+
+                <div class="input-group">
+                    <label for="workoutType">Workout Type</label>
+                    <select id="workoutType" name="workoutType" required>
+                        <option value="Running">Running</option>
+                        <option value="Weightlifting">Weightlifting</option>
+                        <option value="Cycling">Cycling</option>
+                        <option value="Swimming">Swimming</option>
+                        <option value="Yoga">Yoga</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="durationMinutes">Duration (in minutes)</label>
+                    <input type="number" id="durationMinutes" name="durationMinutes" placeholder="e.g., 30" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="caloriesBurned">Calories Burned (optional)</label>
+                    <input type="number" id="caloriesBurned" name="caloriesBurned" placeholder="e.g., 250">
+                </div>
+
+                <div class="input-group">
+                    <label for="logDate">Date of Workout</label>
+                    <input type="date" id="logDate" name="logDate" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Add Workout Log</button>
+            </form>
+        </div>
+
+    </body>
+</html>

@@ -4,3 +4,7 @@
 /backend/FitLogBackend/src/config.properties
 /backend/FitLogBackend/build/
 /backend/FitLogBackend/dist/
+/backend/chatapp/nbproject/private/
+/backend/chat_app/nbproject/private/
+/backend/chat_app/build/
+/backend/chat_app/dist/
