@@ -34,6 +34,8 @@ public class WorkoutServlet extends HttpServlet {
         
         if ("edit".equals(action)) {
             showEditForm(request, response);
+        } else if ("delete".equals(action)) {
+            deleteWorkout(request, response);
         } else {
             listWorkouts(request, response);
         }
@@ -44,7 +46,6 @@ public class WorkoutServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String idStr = request.getParameter("id");
-
         if (idStr != null && !idStr.isEmpty()) {
             updateWorkout(request, response);
         } else {
@@ -52,15 +53,13 @@ public class WorkoutServlet extends HttpServlet {
         }
     }
 
-
-    private void listWorkouts(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    
+    private void listWorkouts(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.sendRedirect("login.html");
             return;
         }
-
         User loggedInUser = (User) session.getAttribute("loggedInUser");
         List<Workout> workoutList = workoutDAO.getWorkoutsByUserId(loggedInUser.getId());
         request.setAttribute("workoutList", workoutList);
@@ -68,24 +67,20 @@ public class WorkoutServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.sendRedirect("login.html");
             return;
         }
-
         int id = Integer.parseInt(request.getParameter("id"));
         Workout existingWorkout = workoutDAO.getWorkoutById(id);
-        request.setAttribute("workout", existingWorkout); 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("edit-workout.jsp"); 
+        request.setAttribute("workout", existingWorkout);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("edit-workout.jsp");
         dispatcher.forward(request, response);
     }
 
-    private void addWorkout(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-
+    private void addWorkout(HttpServletRequest request, HttpServletResponse response) throws IOException { 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -93,7 +88,6 @@ public class WorkoutServlet extends HttpServlet {
             return;
         }
         User loggedInUser = (User) session.getAttribute("loggedInUser");
-
         try {
             Workout newWorkout = new Workout();
             newWorkout.setUserId(loggedInUser.getId());
@@ -104,7 +98,6 @@ public class WorkoutServlet extends HttpServlet {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             java.util.Date utilDate = sdf.parse(request.getParameter("logDate"));
             newWorkout.setLogDate(new Date(utilDate.getTime()));
-
             if (workoutDAO.addWorkout(newWorkout)) {
                 response.sendRedirect("workouts");
             } else {
@@ -115,15 +108,13 @@ public class WorkoutServlet extends HttpServlet {
         }
     }
 
-    private void updateWorkout(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    private void updateWorkout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
              response.getWriter().write("Authentication Error: You must be logged in.");
              return;
         }
-
         try {
             Workout workout = new Workout();
             workout.setId(Integer.parseInt(request.getParameter("id")));
@@ -134,12 +125,29 @@ public class WorkoutServlet extends HttpServlet {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             java.util.Date utilDate = sdf.parse(request.getParameter("logDate"));
             workout.setLogDate(new Date(utilDate.getTime()));
-
             if (workoutDAO.updateWorkout(workout)) {
                 response.sendRedirect("workouts");
             } else {
                 response.getWriter().write("Failed to update workout.");
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteWorkout(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+             response.getWriter().write("Authentication Error: You must be logged in.");
+             return;
+        }
+        
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            workoutDAO.deleteWorkout(id);
+            response.sendRedirect("workouts"); 
         } catch (Exception e) {
             e.printStackTrace();
         }

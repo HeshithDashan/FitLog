@@ -12,6 +12,7 @@ import java.util.List;
 public class WorkoutDAO {
 
 
+    
     private static final String INSERT_WORKOUT_SQL = "INSERT INTO workouts (userId, workoutType, durationMinutes, caloriesBurned, logDate) VALUES (?, ?, ?, ?, ?);";
 
     public boolean addWorkout(Workout workout) {
@@ -54,7 +55,7 @@ public class WorkoutDAO {
         return workouts;
     }
 
-    public Workout getWorkoutById(int workoutId) {
+    public Workout getWorkoutById(int workoutId) { 
         Workout workout = null;
         String SELECT_WORKOUT_BY_ID_SQL = "SELECT * FROM workouts WHERE id = ?;";
         try (Connection connection = DBConnection.getConnection();
@@ -79,18 +80,31 @@ public class WorkoutDAO {
 
     public boolean updateWorkout(Workout workout) {
         String UPDATE_WORKOUT_SQL = "UPDATE workouts SET workoutType = ?, durationMinutes = ?, caloriesBurned = ?, logDate = ? WHERE id = ?;";
-        
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_WORKOUT_SQL)) {
-
             preparedStatement.setString(1, workout.getWorkoutType());
             preparedStatement.setInt(2, workout.getDurationMinutes());
             preparedStatement.setInt(3, workout.getCaloriesBurned());
             preparedStatement.setDate(4, workout.getLogDate());
             preparedStatement.setInt(5, workout.getId());
-
             int result = preparedStatement.executeUpdate();
-            return result > 0; 
+            return result > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public boolean deleteWorkout(int workoutId) {
+        String DELETE_WORKOUT_SQL = "DELETE FROM workouts WHERE id = ?;";
+        
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_WORKOUT_SQL)) {
+
+            preparedStatement.setInt(1, workoutId);
+            int result = preparedStatement.executeUpdate();
+            return result > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();

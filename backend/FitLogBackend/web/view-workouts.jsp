@@ -4,7 +4,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%-- (Head section is the same, no changes here) --%>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Workouts - FitLog</title>
@@ -24,9 +23,10 @@
         .workout-table tbody tr:nth-child(even) { background-color: #f9f9f9; }
         .workout-table tbody tr:hover { background-color: #f1f1f1; }
         .no-workouts { text-align: center; margin-top: 20px; color: #606770; }
-        /* --- අලුත් style එක --- */
         .action-link { color: #007bff; text-decoration: none; font-weight: 500; }
         .action-link:hover { text-decoration: underline; }
+        /* --- Delete link style --- */
+        .delete-link { color: #dc3545; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -48,7 +48,7 @@
                         <th>Workout Type</th>
                         <th>Duration (mins)</th>
                         <th>Calories Burned</th>
-                        <th>Actions</th> 
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,9 +58,11 @@
                             <td><%= workout.getWorkoutType() %></td>
                             <td><%= workout.getDurationMinutes() %></td>
                             <td><%= workout.getCaloriesBurned() %></td>
-
                             <td>
                                 <a href="workouts?action=edit&id=<%= workout.getId() %>" class="action-link">Edit</a>
+                                |
+                                <a href="workouts?action=delete&id=<%= workout.getId() %>" class="action-link delete-link" 
+                                   onclick="return confirm('Are you sure you want to delete this workout? This action cannot be undone.');">Delete</a>
                             </td>
                         </tr>
                     <% } %>
