@@ -25,7 +25,6 @@
         .no-workouts { text-align: center; margin-top: 20px; color: #606770; }
         .action-link { color: #007bff; text-decoration: none; font-weight: 500; }
         .action-link:hover { text-decoration: underline; }
-        /* --- Delete link style --- */
         .delete-link { color: #dc3545; margin-left: 10px; }
     </style>
 </head>
