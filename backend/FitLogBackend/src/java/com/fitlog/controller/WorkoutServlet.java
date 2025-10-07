@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List; 
+import javax.servlet.RequestDispatcher; 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,17 +25,38 @@ public class WorkoutServlet extends HttpServlet {
     public void init() {
         workoutDAO = new WorkoutDAO();
     }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            response.sendRedirect("login.html");
+            return;
+        }
+
+        User loggedInUser = (User) session.getAttribute("loggedInUser");
+        int userId = loggedInUser.getId();
+
+        List<Workout> workoutList = workoutDAO.getWorkoutsByUserId(userId);
+
+        request.setAttribute("workoutList", workoutList);
+
+        RequestDispatcher dispatcher = request.getRequestDispatcher("view-workouts.jsp");
+        dispatcher.forward(request, response);
+    }
     
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        
         HttpSession session = request.getSession(false);
 
-       
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
             response.getWriter().write("Authentication Error: You must be logged in to add a workout.");
             return;
         }
@@ -64,7 +87,7 @@ public class WorkoutServlet extends HttpServlet {
             boolean success = workoutDAO.addWorkout(newWorkout);
 
             if (success) {
-                response.getWriter().write("Workout added successfully!");
+                response.sendRedirect("workouts");
             } else {
                 response.getWriter().write("Failed to add workout.");
             }

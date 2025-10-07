@@ -1,26 +1,36 @@
 package com.fitlog.test;
 
-import com.fitlog.util.DBConnection;
-import java.sql.Connection;
+import com.fitlog.dao.WorkoutDAO;
+import com.fitlog.model.Workout;
+import java.util.List;
 
 public class TestDB {
 
     public static void main(String[] args) {
+        System.out.println("--- Testing getWorkoutsByUserId() ---");
 
-        System.out.println("--- Testing DBConnection ONLY ---");
+        WorkoutDAO workoutDAO = new WorkoutDAO();
 
-        Connection conn = DBConnection.getConnection();
+        int testUserId = 1;
+        System.out.println("Fetching workouts for user ID: " + testUserId);
 
-        if (conn != null) {
-            System.out.println("SUCCESS: Database connection established successfully!");
-            try {
-                conn.close();
-                System.out.println("Connection closed.");
-            } catch (Exception e) {
-                e.printStackTrace();
+        List<Workout> userWorkouts = workoutDAO.getWorkoutsByUserId(testUserId);
+
+        if (userWorkouts != null && !userWorkouts.isEmpty()) {
+            System.out.println("\nSUCCESS: Found " + userWorkouts.size() + " workouts for user ID " + testUserId);
+            
+            for (Workout workout : userWorkouts) {
+                System.out.println("------------------------------------");
+                System.out.println("  Workout ID: " + workout.getId());
+                System.out.println("  Type: " + workout.getWorkoutType());
+                System.out.println("  Duration: " + workout.getDurationMinutes() + " mins");
+                System.out.println("  Date: " + workout.getLogDate());
+                System.out.println("------------------------------------");
             }
+        } else if (userWorkouts != null) {
+            System.out.println("INFO: No workouts found for user ID " + testUserId);
         } else {
-            System.err.println("FAILURE: Failed to establish database connection. Check the logs for other errors.");
+            System.out.println("FAILURE: The method returned null. Check for errors in the DAO.");
         }
     }
 }
