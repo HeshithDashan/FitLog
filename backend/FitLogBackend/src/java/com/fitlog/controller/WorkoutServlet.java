@@ -50,7 +50,7 @@ public class WorkoutServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\":\"Authentication required\"}"); // JSON error message
+            response.getWriter().write("{\"error\":\"Authentication required\"}"); 
             return;
         }
 
