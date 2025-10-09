@@ -35,10 +35,9 @@ function App() {
         <h1 className="text-4xl font-bold text-center mb-8 text-sky-400">
           FitLog Dashboard
         </h1>
-        
-        <AddWorkoutForm />
-        <WorkoutList workouts={workouts} isLoading={isLoading} />
 
+        <AddWorkoutForm />
+        <WorkoutList workouts={workouts} isLoading={isLoading} onWorkoutDeleted={fetchWorkouts} />
       </div>
     </div>
   );
