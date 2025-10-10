@@ -6,6 +6,9 @@ import './index.css';
 function App() {
   const [workouts, setWorkouts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+
+  const [editingWorkout, setEditingWorkout] = useState(null);
 
   const fetchWorkouts = async () => {
     try {
@@ -29,6 +32,19 @@ function App() {
     fetchWorkouts();
   }, []);
 
+  
+  const handleEditClick = (workout) => {
+    console.log("Editing workout:", workout); 
+    setEditingWorkout(workout); 
+    window.scrollTo(0, 0);
+  };
+  
+
+  const handleActionComplete = () => {
+    setEditingWorkout(null); 
+    fetchWorkouts();
+  };
+
   return (
     <div className="bg-gray-900 text-white min-h-screen p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
@@ -36,13 +52,16 @@ function App() {
           FitLog Dashboard
         </h1>
         
-        
-        <AddWorkoutForm onWorkoutAdded={fetchWorkouts} />
+        <AddWorkoutForm 
+          workoutToEdit={editingWorkout} 
+          onActionComplete={handleActionComplete} 
+        />
 
         <WorkoutList 
           workouts={workouts} 
           isLoading={isLoading} 
           onWorkoutDeleted={fetchWorkouts} 
+          onEditClick={handleEditClick}
         />
 
       </div>

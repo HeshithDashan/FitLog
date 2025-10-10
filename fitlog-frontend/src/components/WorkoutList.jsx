@@ -1,6 +1,6 @@
 import React from 'react';
 
-function WorkoutList({ workouts, isLoading, onWorkoutDeleted }) {
+function WorkoutList({ workouts, isLoading, onWorkoutDeleted, onEditClick }) {
 
   const handleDelete = async (workoutId) => {
     if (!window.confirm('Are you sure you want to delete this workout?')) {
@@ -17,7 +17,6 @@ function WorkoutList({ workouts, isLoading, onWorkoutDeleted }) {
         alert('Workout deleted successfully!');
         onWorkoutDeleted();
       } else {
-
         const errorData = await response.json();
         alert(`Failed to delete workout: ${errorData.error}`);
       }
@@ -54,6 +53,13 @@ function WorkoutList({ workouts, isLoading, onWorkoutDeleted }) {
             <td className="p-4">{workout.durationMinutes}</td>
             <td className="p-4">{workout.caloriesBurned}</td>
             <td className="p-4">
+
+              <button
+                onClick={() => onEditClick(workout)}
+                className="font-medium text-sky-500 hover:underline mr-4"
+              >
+                Edit
+              </button>
 
               <button
                 onClick={() => handleDelete(workout.id)}

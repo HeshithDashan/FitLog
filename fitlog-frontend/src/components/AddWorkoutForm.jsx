@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function AddWorkoutForm({ onWorkoutAdded }) {
+function AddWorkoutForm({ workoutToEdit, onActionComplete }) { 
   const [workoutType, setWorkoutType] = useState('Running');
   const [duration, setDuration] = useState('');
   const [calories, setCalories] = useState('');
   const [date, setDate] = useState('');
+
+  useEffect(() => {
+    if (workoutToEdit) {
+      setWorkoutType(workoutToEdit.workoutType);
+      setDuration(workoutToEdit.durationMinutes);
+      setCalories(workoutToEdit.caloriesBurned);
+      setDate(new Date(workoutToEdit.logDate).toISOString().split('T')[0]);
+    } else {
+      setWorkoutType('Running');
+      setDuration('');
+      setCalories('');
+      setDate('');
+    }
+  }, [workoutToEdit]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,10 +28,19 @@ function AddWorkoutForm({ onWorkoutAdded }) {
     formData.append('durationMinutes', duration);
     formData.append('caloriesBurned', calories);
     formData.append('logDate', date);
+    
+    let url = 'http://localhost:8080/FitLogBackend/workouts';
+
+    let method = 'POST';
+
+    if (workoutToEdit) {
+
+      formData.append('id', workoutToEdit.id);
+    }
 
     try {
-      const response = await fetch('http://localhost:8080/FitLogBackend/workouts', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: method, 
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -25,28 +48,24 @@ function AddWorkoutForm({ onWorkoutAdded }) {
         credentials: 'include',
       });
 
-
       if (response.ok) {
-
-        alert('Workout added successfully!');
-        setWorkoutType('Running');
-        setDuration('');
-        setCalories('');
-        setDate('');
-        onWorkoutAdded();
+        alert(workoutToEdit ? 'Workout updated successfully!' : 'Workout added successfully!');
+        onActionComplete();
       } else {
         const errorData = await response.json();
-        alert(`Failed to add workout: ${errorData.error || 'Unknown server error'}`);
+        alert(`Failed: ${errorData.error || 'Unknown server error'}`);
       }
     } catch (error) {
-      console.error('Error adding workout:', error);
-      alert('An error occurred while adding the workout.');
+      console.error('Error submitting form:', error);
+      alert('An error occurred while submitting the form.');
     }
   };
 
   return (
     <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
-      <h2 className="text-2xl font-bold mb-4 text-white">Add a New Workout</h2>
+      <h2 className="text-2xl font-bold mb-4 text-white">
+        {workoutToEdit ? 'Edit Workout' : 'Add a New Workout'}
+      </h2>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -73,7 +92,7 @@ function AddWorkoutForm({ onWorkoutAdded }) {
           </div>
         </div>
         <button type="submit" className="mt-6 w-full text-white bg-sky-600 hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-sky-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-          Add Workout Log
+          {workoutToEdit ? 'Update Workout' : 'Add Workout Log'}
         </button>
       </form>
     </div>
