@@ -7,11 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map; 
 
 public class WorkoutDAO {
-
-
     
     private static final String INSERT_WORKOUT_SQL = "INSERT INTO workouts (userId, workoutType, durationMinutes, caloriesBurned, logDate) VALUES (?, ?, ?, ?, ?);";
 
@@ -95,7 +95,6 @@ public class WorkoutDAO {
         }
     }
 
-
     public boolean deleteWorkout(int workoutId) {
         String DELETE_WORKOUT_SQL = "DELETE FROM workouts WHERE id = ?;";
         
@@ -110,5 +109,35 @@ public class WorkoutDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Map<String, Object>> getWeeklyCaloriesSummary(int userId) {
+        List<Map<String, Object>> summary = new ArrayList<>();
+        
+
+        String sql = "SELECT DATE(logDate) as report_date, SUM(caloriesBurned) as total_calories " +
+                     "FROM workouts " +
+                     "WHERE userId = ? AND logDate >= CURDATE() - INTERVAL 6 DAY " +
+                     "GROUP BY DATE(logDate) " +
+                     "ORDER BY report_date ASC;";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            
+            preparedStatement.setInt(1, userId);
+            
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> dayData = new HashMap<>();
+                dayData.put("report_date", rs.getDate("report_date"));
+                dayData.put("total_calories", rs.getInt("total_calories"));
+                summary.add(dayData);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return summary;
     }
 }

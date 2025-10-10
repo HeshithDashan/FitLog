@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import WorkoutList from './components/WorkoutList.jsx';
 import AddWorkoutForm from './components/AddWorkoutForm.jsx';
+import WeeklyCalorieChart from './components/WeeklyCalorieChart.jsx'; 
 import './index.css';
-import { Toaster } from 'react-hot-toast'; 
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [workouts, setWorkouts] = useState([]);
@@ -10,7 +11,6 @@ function App() {
   const [editingWorkout, setEditingWorkout] = useState(null);
 
   const fetchWorkouts = async () => {
-
     try {
       setIsLoading(true);
       const response = await fetch('http://localhost:8080/FitLogBackend/workouts', {
@@ -44,7 +44,6 @@ function App() {
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-4 md:p-8">
-
       <Toaster 
         position="top-center"
         toastOptions={{
@@ -60,6 +59,8 @@ function App() {
           FitLog Dashboard
         </h1>
         
+        <WeeklyCalorieChart />
+
         <AddWorkoutForm 
           workoutToEdit={editingWorkout} 
           onActionComplete={handleActionComplete} 
