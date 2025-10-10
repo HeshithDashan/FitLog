@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast'; 
 
 function AddWorkoutForm({ workoutToEdit, onActionComplete }) { 
   const [workoutType, setWorkoutType] = useState('Running');
@@ -30,34 +31,35 @@ function AddWorkoutForm({ workoutToEdit, onActionComplete }) {
     formData.append('logDate', date);
     
     let url = 'http://localhost:8080/FitLogBackend/workouts';
-
     let method = 'POST';
 
     if (workoutToEdit) {
-
       formData.append('id', workoutToEdit.id);
     }
 
     try {
       const response = await fetch(url, {
-        method: method, 
+        method: method,
+        body: formData.toString(),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: formData.toString(),
         credentials: 'include',
       });
 
       if (response.ok) {
-        alert(workoutToEdit ? 'Workout updated successfully!' : 'Workout added successfully!');
+
+        toast.success(workoutToEdit ? 'Workout updated successfully!' : 'Workout added successfully!');
         onActionComplete();
       } else {
         const errorData = await response.json();
-        alert(`Failed: ${errorData.error || 'Unknown server error'}`);
+
+        toast.error(`Failed: ${errorData.error || 'Unknown server error'}`);
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('An error occurred while submitting the form.');
+
+      toast.error('An error occurred while submitting the form.');
     }
   };
 
@@ -67,6 +69,7 @@ function AddWorkoutForm({ workoutToEdit, onActionComplete }) {
         {workoutToEdit ? 'Edit Workout' : 'Add a New Workout'}
       </h2>
       <form onSubmit={handleSubmit}>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="workout-type" className="block mb-2 text-sm font-medium text-gray-300">Workout Type</label>

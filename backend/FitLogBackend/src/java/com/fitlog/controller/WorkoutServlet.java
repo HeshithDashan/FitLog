@@ -34,7 +34,6 @@ public class WorkoutServlet extends HttpServlet {
         listWorkoutsAsJson(request, response);
     }
     
-    // --- doPost Method එක සරල කළා ---
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -45,20 +44,16 @@ public class WorkoutServlet extends HttpServlet {
         if ("delete".equals(action)) {
             deleteWorkout(request, response);
         } else if (idStr != null && !idStr.isEmpty()) {
-            // id එකක් තියෙනවා නම්, ඒක update request එකක්
+
             updateWorkout(request, response);
         } else {
-            // id එකක් නැත්නම්, ඒක add request එකක්
+
             addWorkout(request, response);
         }
     }
     
-    // doPut method එක දැන් අවශ්‍ය නෑ. සම්පූර්ණයෙන්ම අයින් කළා.
-
-    // --- Private Helper Methods (unchanged from before) ---
-
     private void listWorkoutsAsJson(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // ... (no changes here)
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -74,7 +69,7 @@ public class WorkoutServlet extends HttpServlet {
     }
 
     private void addWorkout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // ... (no changes here)
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -108,7 +103,7 @@ public class WorkoutServlet extends HttpServlet {
     }
 
     private void updateWorkout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // ... (no changes here)
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

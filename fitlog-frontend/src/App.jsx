@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import WorkoutList from './components/WorkoutList.jsx';
 import AddWorkoutForm from './components/AddWorkoutForm.jsx';
 import './index.css';
+import { Toaster } from 'react-hot-toast'; 
 
 function App() {
   const [workouts, setWorkouts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-
   const [editingWorkout, setEditingWorkout] = useState(null);
 
   const fetchWorkouts = async () => {
+
     try {
       setIsLoading(true);
       const response = await fetch('http://localhost:8080/FitLogBackend/workouts', {
@@ -32,21 +32,29 @@ function App() {
     fetchWorkouts();
   }, []);
 
-  
   const handleEditClick = (workout) => {
-    console.log("Editing workout:", workout); 
-    setEditingWorkout(workout); 
+    setEditingWorkout(workout);
     window.scrollTo(0, 0);
   };
   
-
   const handleActionComplete = () => {
-    setEditingWorkout(null); 
+    setEditingWorkout(null);
     fetchWorkouts();
   };
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-4 md:p-8">
+
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          style: {
+            background: '#333',
+            color: '#fff',
+          },
+        }}
+      />
+
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-8 text-sky-400">
           FitLog Dashboard

@@ -1,28 +1,40 @@
-import React from 'react';
-
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import ConfirmDeleteModal from './ConfirmDeleteModal.jsx'; 
 function WorkoutList({ workouts, isLoading, onWorkoutDeleted, onEditClick }) {
 
-  const handleDelete = async (workoutId) => {
-    if (!window.confirm('Are you sure you want to delete this workout?')) {
-      return;
-    }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [workoutToDelete, setWorkoutToDelete] = useState(null);
 
+  const openConfirmationModal = (workout) => {
+    setWorkoutToDelete(workout);
+    setIsModalOpen(true);
+  };
+
+  const closeConfirmationModal = () => {
+    setWorkoutToDelete(null);
+    setIsModalOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (!workoutToDelete) return;
     try {
-      const response = await fetch(`http://localhost:8080/FitLogBackend/workouts?action=delete&id=${workoutId}`, {
+      const response = await fetch(`http://localhost:8080/FitLogBackend/workouts?action=delete&id=${workoutToDelete.id}`, {
         method: 'POST',
         credentials: 'include',
       });
-
       if (response.ok) {
-        alert('Workout deleted successfully!');
+        toast.success('Workout deleted successfully!');
         onWorkoutDeleted();
       } else {
         const errorData = await response.json();
-        alert(`Failed to delete workout: ${errorData.error}`);
+        toast.error(`Failed to delete workout: ${errorData.error}`);
       }
     } catch (error) {
       console.error('Error deleting workout:', error);
-      alert('An error occurred while deleting.');
+      toast.error('An error occurred while deleting.');
+    } finally {
+      closeConfirmationModal();
     }
   };
 
@@ -35,43 +47,53 @@ function WorkoutList({ workouts, isLoading, onWorkoutDeleted, onEditClick }) {
   }
 
   return (
-    <table className="w-full text-left">
-      <thead className="bg-gray-700">
-        <tr>
-          <th className="p-4 font-semibold">Date</th>
-          <th className="p-4 font-semibold">Workout Type</th>
-          <th className="p-4 font-semibold">Duration (mins)</th>
-          <th className="p-4 font-semibold">Calories Burned</th>
-          <th className="p-4 font-semibold">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {workouts.map(workout => (
-          <tr key={workout.id} className="border-b border-gray-700 hover:bg-gray-600">
-            <td className="p-4">{new Date(workout.logDate).toLocaleDateString()}</td>
-            <td className="p-4">{workout.workoutType}</td>
-            <td className="p-4">{workout.durationMinutes}</td>
-            <td className="p-4">{workout.caloriesBurned}</td>
-            <td className="p-4">
-
-              <button
-                onClick={() => onEditClick(workout)}
-                className="font-medium text-sky-500 hover:underline mr-4"
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() => handleDelete(workout.id)}
-                className="font-medium text-red-500 hover:underline"
-              >
-                Delete
-              </button>
-            </td>
+    <>
+      <table className="w-full text-left">
+        
+        <thead className="bg-gray-700">
+          <tr>
+            <th className="p-4 font-semibold">Date</th>
+            <th className="p-4 font-semibold">Workout Type</th>
+            <th className="p-4 font-semibold">Duration (mins)</th>
+            <th className="p-4 font-semibold">Calories Burned</th>
+            <th className="p-4 font-semibold">Actions</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {workouts.map(workout => (
+            <tr key={workout.id} className="border-b border-gray-700 hover:bg-gray-600">
+              <td className="p-4">{new Date(workout.logDate).toLocaleDateString()}</td>
+              <td className="p-4">{workout.workoutType}</td>
+              <td className="p-4">{workout.durationMinutes}</td>
+              <td className="p-4">{workout.caloriesBurned}</td>
+              <td className="p-4">
+                <button
+                  onClick={() => onEditClick(workout)}
+                  className="font-medium text-sky-500 hover:underline mr-4"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => openConfirmationModal(workout)}
+                  className="font-medium text-red-500 hover:underline"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      
+      <ConfirmDeleteModal 
+        isOpen={isModalOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={handleDelete}
+        workout={workoutToDelete}
+      />
+      
+    </>
   );
 }
 
