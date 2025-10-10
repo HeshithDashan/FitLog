@@ -35,11 +35,9 @@ public class WorkoutServlet extends HttpServlet {
         
         String action = request.getParameter("action");
         
-        // JSP edit form එකට අදාළ පරණ logic එක
         if ("edit".equals(action)) {
             showEditForm(request, response);
         } else {
-            // React app එකට JSON දෙන ප්‍රධාන logic එක
             listWorkoutsAsJson(request, response);
         }
     }
@@ -50,11 +48,9 @@ public class WorkoutServlet extends HttpServlet {
         
         String action = request.getParameter("action");
 
-        // "action=delete" කියලා ආවොත්, ඒක delete request එකක්
         if ("delete".equals(action)) {
             deleteWorkout(request, response);
         } else {
-            // නැත්නම්, id එකක් තියෙනවද බලලා add ද update ද කියලා තීරණය කරනවා
             String idStr = request.getParameter("id");
             if (idStr != null && !idStr.isEmpty()) {
                 updateWorkout(request, response);
@@ -63,10 +59,33 @@ public class WorkoutServlet extends HttpServlet {
             }
         }
     }
-    
-    // doDelete method එක දැන් අවශ්‍ය නෑ, මොකද අපි POST වලින් ඒ වැඩේ කරන්නේ
 
-    // --- Private Helper Methods ---
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\":\"Authentication required\"}");
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            if (workoutDAO.deleteWorkout(id)) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("{\"message\":\"Workout deleted successfully\"}");
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND); 
+                response.getWriter().write("{\"error\":\"Workout not found or could not be deleted\"}");
+            }
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); 
+            response.getWriter().write("{\"error\":\"Invalid workout ID provided\"}");
+        }
+    }
+
 
     private void listWorkoutsAsJson(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
@@ -138,7 +157,6 @@ public class WorkoutServlet extends HttpServlet {
         }
     }
 
-    // --- පහළ තියෙන මේ JSP වලට අදාළ methods දෙක දැනට React project එකට අවශ්‍ය නෑ, ඒත් තිබුණට කමක් නෑ ---
     private void showEditForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("loggedInUser") == null) {
@@ -170,7 +188,7 @@ public class WorkoutServlet extends HttpServlet {
             java.util.Date utilDate = sdf.parse(request.getParameter("logDate"));
             workout.setLogDate(new Date(utilDate.getTime()));
             if (workoutDAO.updateWorkout(workout)) {
-                response.sendRedirect("workouts"); // This should also be changed to JSON later
+                response.sendRedirect("workouts");
             } else {
                 response.getWriter().write("Failed to update workout.");
             }
@@ -179,4 +197,3 @@ public class WorkoutServlet extends HttpServlet {
         }
     }
 }
-

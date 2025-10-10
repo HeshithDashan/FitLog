@@ -13,12 +13,12 @@ public class Workout {
     private Date logDate;
     private Timestamp createdAt;
 
-    // Default Constructor
+
     public Workout() {
     }
 
-    // --- Getters and Setters ---
 
+    
     public int getId() {
         return id;
     }
