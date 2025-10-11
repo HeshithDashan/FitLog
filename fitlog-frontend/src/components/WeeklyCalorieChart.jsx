@@ -5,16 +5,19 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  LineElement,
+  PointElement,
   Title,
   Tooltip,
   Legend
@@ -23,6 +26,7 @@ ChartJS.register(
 function WeeklyCalorieChart() {
   const [chartData, setChartData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const DAILY_GOAL = 300; 
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -39,19 +43,30 @@ function WeeklyCalorieChart() {
         const data = await response.json();
 
         if (data && data.length > 0) {
-
-            const labels = data.map(item => new Date(item.report_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+          const labels = data.map(item => new Date(item.report_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
           const calories = data.map(item => item.total_calories);
+          const goalData = labels.map(() => DAILY_GOAL);
 
           setChartData({
             labels: labels,
             datasets: [
               {
+                type: 'bar',
                 label: 'Calories Burned',
                 data: calories,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
+              },
+              {
+                type: 'line',
+                label: 'Daily Goal',
+                data: goalData,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                pointRadius: 0,
+                fill: false,
+                tension: 0.1
               },
             ],
           });
@@ -64,9 +79,9 @@ function WeeklyCalorieChart() {
     };
 
     fetchChartData();
-  }, []); 
+  }, []);
 
-  
+
   const options = {
     responsive: true,
     plugins: {
@@ -78,8 +93,8 @@ function WeeklyCalorieChart() {
       },
       title: {
         display: true,
-        text: 'Calories Burned in the Last 7 Days',
-        color: '#fff', 
+        text: 'Calories Burned vs. Daily Goal',
+        color: '#fff',
         font: {
             size: 18
         }
@@ -87,10 +102,10 @@ function WeeklyCalorieChart() {
     },
     scales: {
         y: {
-            ticks: { color: '#ccc' } 
+            ticks: { color: '#ccc' }
         },
         x: {
-            ticks: { color: '#ccc' } 
+            ticks: { color: '#ccc' }
         }
     }
   };

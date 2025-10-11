@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map; 
+import java.util.Map;
 
 public class WorkoutDAO {
     
@@ -33,7 +33,7 @@ public class WorkoutDAO {
 
     public List<Workout> getWorkoutsByUserId(int userId) {
         List<Workout> workouts = new ArrayList<>();
-        String SELECT_WORKOUTS_SQL = "SELECT * FROM workouts WHERE userId = ? ORDER BY logDate DESC;";
+        String SELECT_WORKOUTS_SQL = "SELECT * FROM workouts WHERE userId = ? ORDER BY logDate DESC, createdAt DESC;"; // Added secondary sort
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_WORKOUTS_SQL)) {
             preparedStatement.setInt(1, userId);
@@ -100,11 +100,9 @@ public class WorkoutDAO {
         
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_WORKOUT_SQL)) {
-
             preparedStatement.setInt(1, workoutId);
             int result = preparedStatement.executeUpdate();
             return result > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -114,10 +112,10 @@ public class WorkoutDAO {
     public List<Map<String, Object>> getWeeklyCaloriesSummary(int userId) {
         List<Map<String, Object>> summary = new ArrayList<>();
         
-
+        
         String sql = "SELECT DATE(logDate) as report_date, SUM(caloriesBurned) as total_calories " +
                      "FROM workouts " +
-                     "WHERE userId = ? AND logDate >= CURDATE() - INTERVAL 6 DAY " +
+                     "WHERE userId = ? AND DATE(logDate) BETWEEN CURDATE() - INTERVAL 6 DAY AND CURDATE() " +
                      "GROUP BY DATE(logDate) " +
                      "ORDER BY report_date ASC;";
 
